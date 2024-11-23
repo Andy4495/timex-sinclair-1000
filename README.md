@@ -4,53 +4,79 @@
 
 This repo contains notes on restoring and using a vintage Timex Sinclair 1000 / Sinclair ZX81 personal computer.
 
-## Inventory
+## Modifications
 
-I purchased three TS1000 computers from eBay in 2024:
+### Keyboard Replacement
 
-### Unit #1
+A common problem with the keyboards is that the plastic membrane used on the cable becomes brittle over the years and essentially disintegrates. So it came as no surprise that this problem affected my unit as well. I removed the old keyboard from the housing and made sure to carefully remnants of the cable from the connector (it helps to use tweezers and picks to get it all). I replaced it with [this one ordered from eBay][4].
 
-- S/N:
-- Listing noted that it booted, but keyboard not working. No returns.
-- Included the "improved" [ROM version](#rom-versions) as described below
-- Replaced [keyboard][4]
-- Modified video from RF to composite output, using ["single transistor, 2 resistor"][3] design
-- With new keyboard and video mod, tested working on the 2006 TV
-  - Could not get RF modulator output to work. It is possible that the video cable that came with the unit is faulty.
-  - Test additional units with a new (known good) video cable
+### Video Output
 
-#### Next steps
+I modified the video output signal so that it bypasses the RF Modulator and instead outputs a not-fully-compliant composite video signal. I used the ["single transistor, 2 resistor"][3] design. The composite video signal produced is good enough to work on my TV with a composite video input. However, my cheap composite-to-HDMI converter box has difficulty with consistently syncing to the signal.
+
+### Regulator
+
+I removed the 7805 voltage regulator and heatsink. Instead of replacing it with another regulator, I decided to remove it completely and just power the TS1000 directly from a regulated 5V USB wall charger. You should use one that can provide at least 500 mA (one reference site said it should be 700 mA). Everyone has a pile of these laying around.
+
+This requires a few modifications to the PCB:
+
+- Remove inductors I1 and I2
+- Remove capacitors C13 and C14 (note that these are radial capacitors that look like resistors)
+- Place jumper wires across the old I1 and I2 vias (i.e., replace I1 and I2 with zero ohm resistors)
+
+Note that the only [schematic][18] that I could find does not match the circuit on my board. In particular, on my board, I2 is connected between external power ground and PCB ground, which is why the zero ohm jumper across I2 is needed.
+
+Also, if you don't have a 5V charger with the correct plug (a two pin 1/8" phone plug), then you can cut the plug from the original 9V charger from the TS1000 and replace the plug on your 5V charger. Just make sure that the "tip" conductor of the phone plug is positive and the "ring" connector is ground.
+
+In addition, the metal springs inside the power jack were a little loose and didn't make a reliable contact, which caused the TS1000 to power cycle it was bumped. I bent the springs slightly to tighten them. I think these may need to be replaced at some point. If I do replace the power connector, I would probably use either a USB or barrel jack.
+
+### Capacitors
+
+I replaced the two electrolytic capacitors on the board. This was probably not necessary as neither of them were leaking and the both measured the correct capacitance within their rated tolerances.
+
+### ULA Heat Sink
+
+The Ferranti 2C210E ULA (IC1) appears to be functionning correctly. However, this chip is known to run hot, so I mounted a small IC heatsink on the package.
+
+### RAM Upgrade From 2K to 16K
+
+The TS1000 comes with a 2K RAM chip. I replaced this with a 62256 32K chip, of which 16K is usable due to the way the ULA decodes memory addresses. The 2K RAM chip is not socketed and needs to be unsoldered from the PCB. The replacement chip has a slightly different pin configuration, so some modifications need to be made to route the correct PCB signals to the correct pins. I used [this procedure][19], but soldered the jumper wires to the socket, instead of the 16K RAM chip.
+
+## Functional Components
+
+The ROM (IC2) and Z80 CPU (IC3) appear to be fully functional. The ROM contains the "improved" [ROM code version](#rom-versions).
+
+## Next steps
 
 - Test out EPROM mod board with 2764 EPROM
-- Replace 5V regulator and Aluminum heat sink with switching regulator (no heat sink needed)
-- See if I can add more RAM directly to board
-- See if I can program a new EPROM with a game program already loaded, may need a modification to EPROM to jump to a specific location with RUN
-  - This may require more hardware mods, since the ULA generates separate ROMCS and RAMCS signals based on address
-- Original 1K RAM can be expanded to 16K, 32K, or 56K
-
-### Unit #2
-
-- S/N:
-- Listed as untested, but description says it is "in good working order".
-
-### Unit #3
-
-- S/N: F-040804
-- Listed as untested, but in excellent cosmetic condition. Sold as-is.
+- Use [zxtext2p][7] to convert program to WAV files so that I can load programs from a computer instead needing a cassette player
 
 ## Memory Map
 
+| Start |  End | Description | Notes |
+| ----: | ---: | ----------- | ------------------------------------------ |
+|     0 | 1FFF | BASIC ROM   |                                            |
+|  2000 | 3FFF | Shadow ROM  | Disabled with 56K RAM packs                |
+|  4000 | 47FF | 2K RAM      | Default internal RAM                       |
+|  4000 | 7FFF | 16K RAM     | External RAM pack disables 2K built-in RAM |
+|  2000 | FFFF | 56K RAM     | Shadow ROM and internal RAM disabled       |
+
 0 - 8K BASIC ROM  
 8-16K ROM Shadow (disabled with 56K RAM pack)  
-16-17K RAM 1K (disabled with external RAM packs)  
-16-32K RAM 16K (disables internal 1K RAM)  
-8-64K 56K RAM pack (diables internal 1K RAM)  
+16-18K RAM 2K (disabled with external RAM packs)  
+16-32K RAM 16K (disables internal 2K RAM)  
+8-64K 56K RAM pack (diables internal 2K RAM)  
 
-## On-board RAM upgrade
+### Memory Size Test
 
-- <http://www.zx81.de/english/32k-rame.htm>
-- <http://blog.tynemouthsoftware.co.uk/2017/10/zx81-internal-16k-ram-reversible-version.html> (16K RAM, reversible procedure)
-- <http://blog.tynemouthsoftware.co.uk/2014/07/zx81-internal-16k-ram.html> (same as above, but cuts traces and is not easily "reversible")
+To check the RAM size, enter the following one-line program:
+
+```text
+PRINT PEEK 16388+256*PEEK 16389
+```
+
+An unmodified TS1000 would print 2048.
+Upgrading a RAM chip in the motherboard to 16K would print 32768 (16K ROM + 16K RAM).
 
 ## ROM Chip Pinout and Adapter to Use Standard EPROMS
 
@@ -74,10 +100,10 @@ There are multiple versions of the Timex Sinclair ROM. The Timex Sinclair 1000 a
 ## References
 
 - [Website][1] with numerous articles and links about the Timex Sinclair 1000 and related personal computers
-- [ROM Downloads][2]
-  - Version 1 "Standard ROM" [download link][10]
-  - Version 2 "Improved ROM" [download link][11]
-  - "Shoulders of Giants" variant by Geoff Wearmouth [download link][12]
+- ROM [downloads][2]
+  - Others downloads not listed in table [above](rom-versions)
+    - Other languages: [Forth1][13], [Forth2][14], [Assembly][15]
+    - Clones: [Lambda][16], [Power8300][17]
 - [Replacement keyboard][4] available on eBay
 - Procedures to modify video output to composite video instead of RF output
   - [Single transistor method][3], with photos (this is the method that I used successfully)
@@ -85,6 +111,14 @@ There are multiple versions of the Timex Sinclair ROM. The Timex Sinclair 1000 a
 - [Program][6] to converts a text file containing a ZX81 program into a ".p" file suitable for an emulator (this should also work to program a ROM).
   - [Updated version][7] to collapse display file to fit into 1K RAM
 - Convert ZX81 program text to a WAV file for loading into machine without cassette: [link][8] or [link][9]
+- TS1000 schematic from article in VISTA newsletter [Volume 3, Number 5][18]
+- "[Reversible][19]" RAM upgrade procedure
+  - Alternate [procedure][20] that cuts traces on the motherboard
+  - [Procedure][21] to enable full 32K of on-board RAM
+  - Decoding 32K and 56K RAM [procedure][22]
+- ULA replacement module: [vLA81][23]
+  - Modern FPGA-based plug-in replacement for a failed Ferranti ULA chip ("IC1")
+- Writeup of another TS1000 [refurbishment][24]
 
 ## License
 
@@ -102,6 +136,18 @@ The software and other files in this repository are released under what is commo
 [10]: https://k1.spdns.de/Vintage/Sinclair/80/Sinclair%20ZX81/ROMs/zx81%20version%201%20'standard'%20rom%20(Sinclair).rom
 [11]: https://k1.spdns.de/Vintage/Sinclair/80/Sinclair%20ZX81/ROMs/zx81%20version%202%20'improved'%20rom%20(Sinclair).rom
 [12]: https://k1.spdns.de/Vintage/Sinclair/80/Sinclair%20ZX81/ROMs/zx81%20'shoulders%20of%20giants'.rom
+[13]: https://k1.spdns.de/Vintage/Sinclair/80/Sinclair%20ZX81/ROMs/h4th%20(Forth).rom
+[14]: https://k1.spdns.de/Vintage/Sinclair/80/Sinclair%20ZX81/ROMs/tree4th%20(Forth).rom
+[15]: https://k1.spdns.de/Vintage/Sinclair/80/Sinclair%20ZX81/ROMs/aszmic%20(z80%20assembler%20os).rom
+[16]: https://k1.spdns.de/Vintage/Sinclair/80/Sinclair%20ZX81/ROMs/Lambda%20(org)%20(zx81%20clone).rom
+[17]: https://k1.spdns.de/Vintage/Sinclair/80/Sinclair%20ZX81/ROMs/Power8300%20(org)%20(zx81%20clone).rom
+[18]: https://archive.org/details/vista-newsletter/VISTA%20Newsletter%20v3%20n5/page/n5/mode/2up
+[19]: http://blog.tynemouthsoftware.co.uk/2017/10/zx81-internal-16k-ram-reversible-version.html
+[20]: http://blog.tynemouthsoftware.co.uk/2014/07/zx81-internal-16k-ram.html
+[21]: http://www.zx81.de/english/32k-rame.htm
+[22]: https://web.archive.org/web/20100121145742/http://www.user.dccnet.com:80/wrigter/index_files/Thanks%20for%20all%20the%20Memories.htm
+[23]: https://www.vretrodesign.com/products/vla81-zx81-ula-replacement
+[24]: https://www.leadedsolder.com/2021/11/30/timex-sinclair-1000-keyboard-ula-fix.html
 [100]: https://choosealicense.com/licenses/mit/
 [101]: ./LICENSE.txt
 [//]: # ([200]: https://github.com/Andy4495/timex-sinclair-1000)
