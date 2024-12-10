@@ -33,7 +33,7 @@ Circuit modifications:
 
 ### Regulator
 
-All the other TS1000 and ZX81 restoration articles discuss removing the 7805 voltage regulator and replacing it with a switching DC-DC converter (like at [Traco TSR 1-2450][30]). However, since everyone has a pile of 5V USB wall charger, why not just bypass the regulator circuit and power the board directly with a regulated 5V supply. A 500 mA supply should be sufficient, but I ran across one reference that suggested that the TS1000 needs up to 700 mA.
+All the other TS1000 and ZX81 restoration articles discuss removing the 7805 voltage regulator and replacing it with a switching DC-DC converter (like a [Traco TSR 1-2450][30]). However, since everyone has a pile of 5V USB wall charger, why not just bypass the regulator circuit and power the board directly with a regulated 5V supply? A 500 mA supply should be sufficient, but I ran across one reference that suggested that the TS1000 needs up to 700 mA.
 
 This requires a few modifications to the PCB:
 
@@ -62,6 +62,45 @@ The Ferranti 2C210E ULA (IC1) appears to be functionning correctly. However, thi
 
 The TS1000 comes with a 2K RAM chip. I replaced this with a 62256 32K chip, of which 16K is usable due to the way the ULA decodes memory addresses. The 2K RAM chip is not socketed and needs to be unsoldered from the PCB. The replacement chip has a slightly different pin configuration, so some modifications need to be made to route the correct PCB signals to the correct pins. I used [this procedure][19], but soldered the jumper wires to the socket, instead of the 16K RAM chip. Once again, I used some electrical tape to insulate the PCB traces from the modifications.
 
+#### Signal Mapping to Standard RAM
+
+The RAM in my TS1000 was a Toshiba part TMM2016P-1 (24-pin, 2Kx8, 100ns). I replaced it with a 62256 RAM (28-pin, 32Kx8, 100ns). The pin mapping between the chips is slightly different, as outlined in the table below. Fortunately, the TS1000 PCB footprint has space for a 28-pin chip.
+
+The 2016 is a 24-pin part and the 62256 has 28 pins. The pins are mostly the same if you align the "bottom" of the two chips (i.e., line up 2016 pin 12 with 62256 pin 14). Note that the PCB jumper wire should be placed on the PCB location "LK2", and location "LK1" should be empty (a TS100 should already be configured this way from the factory). This jumper configuration routes the A10 signal to the RAM chip.
+
+To simplify the modification, some address signals are swapped. This only impacts where the data is stored internal to the chip. It does not impact actual operation becase the same address location is used for both reads and writes. The physical jumper wires are connected to the cathode side of several diodes for ease of connection, as some of the signals are not otherwise easily accessible on the PCB.
+
+| 2016 Pin | RAM Footprint Signal | 62256 Pin | 62256 Signal | Notes                                         |
+| :------: | :------------------: | :-------: | :----------: | :-------------------------------------------- |
+| N/A      | RFSH                 | 1         | A14          | Bend up socket pin. Connect to Diode D1 (A11) |
+| N/A      | Vcc                  | 2         | A12          | Pulled high, since only using 16K of 32K      |
+| 1        | A7                   | 3         | A7           |                                               |
+| 2        | A6                   | 4         | A6           |                                               |
+| 3        | A5                   | 5         | A5           |                                               |
+| 4        | A4                   | 6         | A4           |                                               |
+| 5        | A3                   | 7         | A3           |                                               |
+| 6        | A2                   | 8         | A2           |                                               |
+| 7        | A1                   | 9         | A1           |                                               |
+| 8        | A0                   | 10        | A0           |                                               |
+| 9        | D0                   | 11        | D0           |                                               |
+| 10       | D1                   | 12        | D1           |                                               |
+| 11       | D2                   | 13        | D2           |                                               |
+| 12       | Vss/GND              | 14        | Vss/GND      |                                               |
+| 13       | D3                   | 15        | D3           |                                               |
+| 14       | D4                   | 16        | D4           |                                               |
+| 15       | D5                   | 17        | D5           |                                               |
+| 16       | D6                   | 18        | D6           |                                               |
+| 17       | D7                   | 19        | D7           |                                               |
+| 18       | /CS                  | 20        | /CE          |                                               |
+| 19       | A10                  | 21        | A10          |                                               |
+| 20       | /OE                  | 22        | /OE          |                                               |
+| 21       | /WE                  | 23        | A11          | Bend up socket pin. Connect to Diode D3 (A12) |
+| 22       | A9                   | 24        | A9           |                                               |
+| 23       | A8                   | 25        | A8           |                                               |
+| 24       | Vcc                  | 26        | A13          | Bend up socket pin. Connect to Diode D5 (A13) |
+| N/A      | /WE                  | 27        | /WE          |                                               |
+| N/A      | Vcc                  | 28        | Vcc          |                                               |
+
 ### Photos
 
 - [Board with video modifications and key component locations][31]
@@ -70,10 +109,6 @@ The TS1000 comes with a 2K RAM chip. I replaced this with a 62256 32K chip, of w
 ## Unmodified Components
 
 The ROM (IC2) and Z80 CPU (IC3) appear to be fully functional. The ROM contains the "improved" [ROM code version](#rom-versions).
-
-## Next steps
-
-- Use [zxtext2p][7] to convert program to WAV files so that I can load programs from a computer instead needing a cassette player
 
 ## Memory Map
 
@@ -104,8 +139,42 @@ Upgrading a RAM chip in the motherboard to 16K would print 32768 (16K ROM + 16K 
 
 ## ROM Chip Adapter to Use Standard EPROMS
 
-The ROM in the TS1000 is a mask rom with the pinout of the obsolete 2364 ROM. A more readily available 2764 EPROM can be used with the [23xx Adapter][33] from Retro Innovations. The adapter can be used as-is without any jumpers modified and does not need the 74HCT138 decoder chip.
+The ROM in the TS1000 is a mask rom (Motorola part ZCM38818P) with the pinout of the obsolete 2364 ROM. A more readily available 2764 EPROM can be used with the [23xx Adapter][33] from Retro Innovations. The adapter can be used as-is with the default jumper settings and does not need the 74HCT138 decoder chip.
 
+### Mapping a 2764 EPROM to the TS1000 2364 ROM
+
+If you want to make your own 2764->2364 adapter, see the table below. Note that the 2364 is a 24-pin part and the 2764 has 28 pins. The pins are mostly the same if you align the "bottom" of the two chips (i.e., line up 2364 pin 12 with 2764 pin 14).
+
+| 2364 Pin | 2364 Signal | 2764 Pin | 2764 Signal | Notes                         |
+| :------: | :---------: | :------: | :---------: | :---------------------------- |
+| N/A      | N/A         | 1        | Vpp         | Pull high (connect to Vcc)    |
+| N/A      | N/A         | 2        | A12         | 2764 pin 2 -> 2364 pin 21     |
+| 1        | A7          | 3        | A7          |                               |
+| 2        | A6          | 4        | A6          |                               |
+| 3        | A5          | 5        | A5          |                               |
+| 4        | A4          | 6        | A4          |                               |
+| 5        | A3          | 7        | A3          |                               |
+| 6        | A2          | 8        | A2          |                               |
+| 7        | A1          | 9        | A1          |                               |
+| 8        | A0          | 10       | A0          |                               |
+| 9        | D0          | 11       | D0          |                               |
+| 10       | D1          | 12       | D1          |                               |
+| 11       | D2          | 13       | D2          |                               |
+| 12       | Vss/GND     | 14       | Vss/GND     |                               |
+| 13       | D3          | 15       | D3          |                               |
+| 14       | D4          | 16       | D4          |                               |
+| 15       | D5          | 17       | D5          |                               |
+| 16       | D6          | 18       | D6          |                               |
+| 17       | D7          | 19       | D7          |                               |
+| 18       | A11         | 20       | /CE         | Pull low (connect to Vss/GND) |
+| 19       | A10         | 21       | A10         |                               |
+| 20       | /CE         | 22       | /OE         |                               |
+| 21       | A12         | 23       | A11         | 2764 pin 23 -> 2364 pin 18    |
+| 22       | A9          | 24       | A9          |                               |
+| 23       | A8          | 25       | A8          |                               |
+| 24       | Vcc         | 26       | N/C         | Pull high (connect to Vcc)    |
+| N/A      | N/A         | 27       | /PGM        | Pull high (connect to Vcc)    |
+| N/A      | N/A         | 28       | Vcc         | 2764 pin 28 -> 2364 pin 24    |
 
 ## ROM Versions
 
@@ -118,6 +187,10 @@ There are multiple versions of the Timex Sinclair ROM. The Timex Sinclair 1000 a
 | [Shoulders of Giants][12]  | Debugged variant by Geoff Wearmouth                                      |
 | Other Languages            | Replacement ROMs for other programming languages like Forth and assembly |
 | Clones                     | Some clones had slightly modified ROMs                                   |
+
+## Next steps
+
+- Use [zxtext2p][7] to convert program to WAV files so that I can load programs from a computer instead needing a cassette player
 
 ## References
 
@@ -141,6 +214,7 @@ There are multiple versions of the Timex Sinclair ROM. The Timex Sinclair 1000 a
 - ULA replacement module: [vLA81][23]
   - Modern FPGA-based plug-in replacement for a failed Ferranti ULA chip ("IC1")
 - ROM chip [23xx Adapter][33] from Retro Innovations
+- Article on [replacing a 2364 ROM with 2764 EPROM][34]
 - Writeup of another TS1000 [refurbishment][24]
 - Photos
   - Composite video circuit inside the [modulator shield can][29]
@@ -184,6 +258,7 @@ The software and other files in this repository are released under what is commo
 [31]: ./extras/pics/TS1000-board-with-video-mods-.jpeg
 [32]: ./extras/pics/TS1000-after-mods.jpeg
 [33]: http://www.go4retro.com/products/23xx-adapter/
+[34]: https://wereallgeeks.wordpress.com/2024/05/22/replace-a-dead-2364-masked-rom-with-a-2764-eprom-of-the-same-size/
 [100]: https://choosealicense.com/licenses/mit/
 [101]: ./LICENSE.txt
 [//]: # ([200]: https://github.com/Andy4495/timex-sinclair-1000)
