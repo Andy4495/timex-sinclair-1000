@@ -2,37 +2,57 @@
 
 [![Check Markdown Links](https://github.com/Andy4495/timex-sinclair-1000/actions/workflows/check-links.yml/badge.svg)](https://github.com/Andy4495/timex-sinclair-1000/actions/workflows/check-links.yml)
 
-This repo contains notes on restoring and using a vintage Timex Sinclair 1000 / Sinclair ZX81 personal computer.
+Notes on restoring and using a vintage Timex Sinclair 1000 / Sinclair ZX81 personal computer.
 
 ## Modifications
 
 ### Keyboard Replacement
 
-A common problem with the keyboards is that the plastic membrane used on the cable becomes brittle over the years and essentially disintegrates. So it came as no surprise that this problem affected my unit as well. I removed the old keyboard from the housing and made sure to carefully remnants of the cable from the connector (it helps to use tweezers and picks to get it all). I replaced it with [this one ordered from eBay][4].
+A common problem with the keyboards is that the plastic membrane used on the cable becomes brittle over the years and essentially disintegrates. So it came as no surprise that this problem affected my unit as well. I removed the old keyboard from the housing and made sure to carefully remove the remnants of the cable from the keyboard connectors KB1 and KB2. It helps to use tweezers and picks to get it all. I replaced it with [this one ordered from eBay][4].
 
 ### Video Output
 
-I modified the video output signal so that it bypasses the RF Modulator and instead outputs a not-fully-compliant composite video signal. I used the ["single transistor, 2 resistor"][3] design. The composite video signal produced is good enough to work on my TV with a composite video input. However, my cheap composite-to-HDMI converter box has difficulty with consistently syncing to the signal.
+I modified the RF output video signal so that it bypasses the RF Modulator and instead outputs a composite video signal. I used the ["single transistor, 2 resistor"][3] design. The composite video signal produced is not fully compliant, but is good enough to work on my TV with a composite video input. However, my cheap composite-to-HDMI converter box has difficulty with consistently syncing to the signal.
+
+Circuit modifications:
+
+- Although I left it in place, I think it should be possible to remove the existing circuit board inside the RF shield can
+- Outside of the shield can, unsolder the middle wire from the "USA" via and move it to the "2" via (this is the video output signal from the ULA chip) ([photo][26])
+- Inside the shield can, cut the 5V and video signal wires from the circuit board inside the can (leave enough to solder the transistor legs)
+- Remove the channel select switch (near the regulator)
+- Solder a jumper between the two switch vias nearest the regulator (this will route 5V to the RF shield can) (see [photo][27])
+- Cut the RF signal wire connected to the RCA jack (see [photo][25])
+- Disconnect the two parts behind the RCA socket (see [photo][28])
+- Install the transistor/resistor modification
+  - Collector to 5V wire coming into shield can
+  - Solder two resistors to the emitter pin
+    - 18 Ohm resistor between the emitter and the RCA output connector
+    - 100 Ohm resistor between the emitter and to ground (RF shield can)
+  - Base to video input wire
+- Post-rework [photo][29], noting the electrical tape under the transistor and on the side of the shield can to insulate against possible shorts
 
 ### Regulator
 
-I removed the 7805 voltage regulator and heatsink. Instead of replacing it with another regulator, I decided to remove it completely and just power the TS1000 directly from a regulated 5V USB wall charger. You should use one that can provide at least 500 mA (one reference site said it should be 700 mA). Everyone has a pile of these laying around.
+All the other TS1000 and ZX81 restoration articles discuss removing the 7805 voltage regulator and replacing it with a switching DC-DC converter (like at [Traco TSR 1-2450][30]). However, since everyone has a pile of 5V USB wall charger, why not just bypass the regulator circuit and power the board directly with a regulated 5V supply. A 500 mA supply should be sufficient, but I ran across one reference that suggested that the TS1000 needs up to 700 mA.
 
 This requires a few modifications to the PCB:
 
 - Remove inductors I1 and I2
-- Remove capacitors C13 and C14 (note that these are radial capacitors that look like resistors)
-- Place jumper wires across the old I1 and I2 vias (i.e., replace I1 and I2 with zero ohm resistors)
+- Remove capacitors C13 and C14 (note that these are radial capacitors that look like resistors and have a light green tint)
+- Remove the 7805 voltage regulator and attached heatsink
+- Solder jumper wires across the old I1 and I2 vias (i.e., replace I1 and I2 with zero ohm resistors)
+- Solder a jumper across the regulator input and output vias, making sure not to connect the middle pin
+  - These are the two outer pins on the regulator (the middle pin is ground)
 
 Note that the only [schematic][18] that I could find does not match the circuit on my board. In particular, on my board, I2 is connected between external power ground and PCB ground, which is why the zero ohm jumper across I2 is needed.
 
-Also, if you don't have a 5V charger with the correct plug (a two pin 1/8" phone plug), then you can cut the plug from the original 9V charger from the TS1000 and replace the plug on your 5V charger. Just make sure that the "tip" conductor of the phone plug is positive and the "ring" connector is ground.
+Also, if you don't have a 5V charger with the correct plug (a two pin 1/8" audio plug), then you can cut the plug from the original 9V charger from the TS1000 and replace the plug on your 5V charger. Just make sure that the "tip" conductor of the audio plug is positive and the "ring" connector is ground.
 
 In addition, the metal springs inside the power jack were a little loose and didn't make a reliable contact, which caused the TS1000 to power cycle it was bumped. I bent the springs slightly to tighten them. I think these may need to be replaced at some point. If I do replace the power connector, I would probably use either a USB or barrel jack.
 
 ### Capacitors
 
-I replaced the two electrolytic capacitors on the board. This was probably not necessary as neither of them were leaking and the both measured the correct capacitance within their rated tolerances.
+I replaced the two electrolytic capacitors on the board. This was probably not necessary as neither of them were leaking and they both measured the correct capacitance within their rated tolerances. I added some small strips of electrical tape under the new capacitors to keep the leads from shorting to the PCB traces.
 
 ### ULA Heat Sink
 
@@ -40,15 +60,19 @@ The Ferranti 2C210E ULA (IC1) appears to be functionning correctly. However, thi
 
 ### RAM Upgrade From 2K to 16K
 
-The TS1000 comes with a 2K RAM chip. I replaced this with a 62256 32K chip, of which 16K is usable due to the way the ULA decodes memory addresses. The 2K RAM chip is not socketed and needs to be unsoldered from the PCB. The replacement chip has a slightly different pin configuration, so some modifications need to be made to route the correct PCB signals to the correct pins. I used [this procedure][19], but soldered the jumper wires to the socket, instead of the 16K RAM chip.
+The TS1000 comes with a 2K RAM chip. I replaced this with a 62256 32K chip, of which 16K is usable due to the way the ULA decodes memory addresses. The 2K RAM chip is not socketed and needs to be unsoldered from the PCB. The replacement chip has a slightly different pin configuration, so some modifications need to be made to route the correct PCB signals to the correct pins. I used [this procedure][19], but soldered the jumper wires to the socket, instead of the 16K RAM chip. Once again, I used some electrical tape to insulate the PCB traces from the modifications.
 
-## Functional Components
+### Photos
+
+- [Board with video modifications and key component locations][31]
+- [Fully modified board][32]
+
+## Unmodified Components
 
 The ROM (IC2) and Z80 CPU (IC3) appear to be fully functional. The ROM contains the "improved" [ROM code version](#rom-versions).
 
 ## Next steps
 
-- Test out EPROM mod board with 2764 EPROM
 - Use [zxtext2p][7] to convert program to WAV files so that I can load programs from a computer instead needing a cassette player
 
 ## Memory Map
@@ -78,12 +102,10 @@ PRINT PEEK 16388+256*PEEK 16389
 An unmodified TS1000 would print 2048.
 Upgrading a RAM chip in the motherboard to 16K would print 32768 (16K ROM + 16K RAM).
 
-## ROM Chip Pinout and Adapter to Use Standard EPROMS
+## ROM Chip Adapter to Use Standard EPROMS
 
-Writeup how to do a 2764 EPROM modification, both signals and module height.
+The ROM in the TS1000 is a mask rom with the pinout of the obsolete 2364 ROM. A more readily available 2764 EPROM can be used with the [23xx Adapter][33] from Retro Innovations. The adapter can be used as-is without any jumpers modified and does not need the 74HCT138 decoder chip.
 
-- No jumpers/mods needed with bare-bones go4retro board
-<http://www.go4retro.com/products/23xx-adapter/>
 
 ## ROM Versions
 
@@ -118,7 +140,12 @@ There are multiple versions of the Timex Sinclair ROM. The Timex Sinclair 1000 a
   - Decoding 32K and 56K RAM [procedure][22]
 - ULA replacement module: [vLA81][23]
   - Modern FPGA-based plug-in replacement for a failed Ferranti ULA chip ("IC1")
+- ROM chip [23xx Adapter][33] from Retro Innovations
 - Writeup of another TS1000 [refurbishment][24]
+- Photos
+  - Composite video circuit inside the [modulator shield can][29]
+  - [Entire board][31], showing the video modifications and labels for key components
+  - Entire board with [all modifications][32]
 
 ## License
 
@@ -148,6 +175,15 @@ The software and other files in this repository are released under what is commo
 [22]: https://web.archive.org/web/20100121145742/http://www.user.dccnet.com:80/wrigter/index_files/Thanks%20for%20all%20the%20Memories.htm
 [23]: https://www.vretrodesign.com/products/vla81-zx81-ula-replacement
 [24]: https://www.leadedsolder.com/2021/11/30/timex-sinclair-1000-keyboard-ula-fix.html
+[25]: https://www.bytedelight.com/wp-content/uploads/2018/10/IMG_20181030_130956.jpg
+[26]: https://www.bytedelight.com/wp-content/uploads/2018/10/IMG_20181030_123817.jpg
+[27]: https://www.bytedelight.com/wp-content/uploads/2018/10/IMG_20181030_125303.jpg
+[28]: https://www.bytedelight.com/wp-content/uploads/2018/10/IMG_20181030_131008.jpg
+[29]: ./extras/pics/TS1000-video-mod.jpeg
+[30]: https://www.mouser.com/datasheet/2/687/tsr1_datasheet-3049675.pdf
+[31]: ./extras/pics/TS1000-board-with-video-mods-.jpeg
+[32]: ./extras/pics/TS1000-after-mods.jpeg
+[33]: http://www.go4retro.com/products/23xx-adapter/
 [100]: https://choosealicense.com/licenses/mit/
 [101]: ./LICENSE.txt
 [//]: # ([200]: https://github.com/Andy4495/timex-sinclair-1000)
