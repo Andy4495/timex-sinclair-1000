@@ -8,7 +8,9 @@ Notes on restoring and using a vintage Timex Sinclair 1000 / Sinclair ZX81 perso
 
 ### Keyboard Replacement
 
-A common problem with the keyboards is that the plastic membrane used on the cable becomes brittle over the years and essentially disintegrates. So it came as no surprise that this problem affected my unit as well. I removed the old keyboard from the housing and made sure to carefully remove the remnants of the cable from the keyboard connectors KB1 and KB2. It helps to use tweezers and picks to get it all. I replaced it with [this one ordered from eBay][4].
+The keyboard cable to the PCB through connectors KB1 and KB2 had become brittle and partially disintegrated, rendering the keyboard unusable. This is a common problem with the Sinclair membrane keyboards, so much so that replacements are readily available on [eBay][4].
+
+All the remnants from the old cable need to be removed from connectors KB1 and KB2 before installing the new keyboard. Using tweezers, picks, and a magnifying lens helps to get all the bits out.
 
 ### Video Output
 
@@ -18,41 +20,44 @@ Circuit modifications:
 
 - Although I left it in place, I think it should be possible to remove the existing circuit board inside the RF shield can
 - Outside of the shield can, unsolder the middle wire from the "USA" via and move it to the "2" via (this is the video output signal from the ULA chip) ([photo][26])
-- Inside the shield can, cut the 5V and video signal wires from the circuit board inside the can (leave enough to solder the transistor legs)
+- Inside the shield can, cut the 5V and video signal wires from the circuit board inside the can (leave enough wire to solder the transistor legs)
 - Remove the channel select switch (near the regulator)
-- Solder a jumper between the two switch vias nearest the regulator (this will route 5V to the RF shield can) (see [photo][27])
+- Solder a jumper between the two switch vias nearest the regulator to route 5V to the RF shield can (see [photo][27])
 - Cut the RF signal wire connected to the RCA jack (see [photo][25])
 - Disconnect the two parts behind the RCA socket (see [photo][28])
-- Install the transistor/resistor modification
-  - Collector to 5V wire coming into shield can
+- Install the transistor/resistor modification. I used a general-purpose [2N3904 transistor][36]:
+  - Collector pin to 5V wire coming into shield can
   - Solder two resistors to the emitter pin
     - 18 Ohm resistor between the emitter and the RCA output connector
     - 100 Ohm resistor between the emitter and to ground (RF shield can)
-  - Base to video input wire
-- Post-rework [photo][29], noting the electrical tape under the transistor and on the side of the shield can to insulate against possible shorts
+  - Base pin to video input wire
+- Post-rework [photo][29]; note the electrical tape under the transistor and on the side of the shield can to insulate against possible shorts
 
 ### Regulator
 
-All the other TS1000 and ZX81 restoration articles discuss removing the 7805 voltage regulator and replacing it with a switching DC-DC converter (like a [Traco TSR 1-2450][30]). However, since everyone has a pile of 5V USB wall charger, why not just bypass the regulator circuit and power the board directly with a regulated 5V supply? A 500 mA supply should be sufficient, but I ran across one reference that suggested that the TS1000 needs up to 700 mA.
+All the other TS1000 and ZX81 restoration articles discuss removing the 7805 voltage regulator and replacing it with a switching DC-DC converter (like a [Traco TSR 1-2450][30]). However, since everyone has a pile of regulated 5V USB wall chargers, why not just bypass the regulator circuit and power the board directly with a regulated 5V supply? The main disadvantage to this approach is that 9 V is no longer available on the edge connector; that pin will supply 5 V instead. I am not sure if there are any cartridges that make use of the 9 V power. A 500 mA supply should be sufficient, but I ran across one reference that suggested that the TS1000 needs up to 700 mA.
 
 This requires a few modifications to the PCB:
 
 - Remove inductors I1 and I2
-- Remove capacitors C13 and C14 (note that these are radial capacitors that look like resistors and have a light green tint)
+- Remove capacitors C13 and C14 (note that these are radial capacitors that look like resistors, but have a light green tint)
 - Remove the 7805 voltage regulator and attached heatsink
 - Solder jumper wires across the old I1 and I2 vias (i.e., replace I1 and I2 with zero ohm resistors)
 - Solder a jumper across the regulator input and output vias, making sure not to connect the middle pin
   - These are the two outer pins on the regulator (the middle pin is ground)
 
-Note that the only [schematic][18] that I could find does not match the circuit on my board. In particular, on my board, I2 is connected between external power ground and PCB ground, which is why the zero ohm jumper across I2 is needed.
+Note that the only TS1000-specific [schematic][18] that I could find does not match the circuit on my board. In particular, on my board, I2 is connected between external power ground and PCB ground, which is why the zero ohm jumper across I2 is needed for this modification. I created a hand-drawn version of what I think is the [actual power input section][35].
 
-Also, if you don't have a 5V charger with the correct plug (a two pin 1/8" audio plug), then you can cut the plug from the original 9V charger from the TS1000 and replace the plug on your 5V charger. Just make sure that the "tip" conductor of the audio plug is positive and the "ring" connector is ground.
+Also, I did not have a 5V charger with the correct plug (a two pin 1/8" audio plug), so I ended up cutting the plug from the original TS1000 9V charger and replaced the plug on my 5V charger. I was extra careful and double-checked that the "tip" conductor of the audio plug was positive and the "ring" connector was ground before attempting to power the computer with the modified charger.
 
 In addition, the metal springs inside the power jack were a little loose and didn't make a reliable contact, which caused the TS1000 to power cycle it was bumped. I bent the springs slightly to tighten them. I think these may need to be replaced at some point. If I do replace the power connector, I would probably use either a USB or barrel jack.
 
 ### Capacitors
 
-I replaced the two electrolytic capacitors on the board. This was probably not necessary as neither of them were leaking and they both measured the correct capacitance within their rated tolerances. I added some small strips of electrical tape under the new capacitors to keep the leads from shorting to the PCB traces.
+I replaced the two electrolytic capacitors (C3 and C5) on the board. This was probably not necessary as neither were leaking and both measured the correct capacitance within their rated tolerances. I added some small strips of electrical tape under the new capacitors to keep the leads from shorting to the PCB traces.
+
+- C3 is rated at 22 uF and 16 V and is connected between the 9V rail and ground near the edge connector. This capacitor is not included on the [VISTA schematic][18]. With the regulator modifications mentioned [above](#regulator), this effectively puts this capacitor across the 5V rail and ground on my board.
+- C5 is rated at 1 uF and 50 V and is connected between the Z80 reset pin and ground. The [VISTA schematic][18] notes this as a 5 V capacitor, but the one I removed was marked as 50 V.
 
 ### ULA Heat Sink
 
@@ -60,20 +65,24 @@ The Ferranti 2C210E ULA (IC1) appears to be functionning correctly. However, thi
 
 ### RAM Upgrade From 2K to 16K
 
-The TS1000 comes with a 2K RAM chip. I replaced this with a 62256 32K chip, of which 16K is usable due to the way the ULA decodes memory addresses. The 2K RAM chip is not socketed and needs to be unsoldered from the PCB. The replacement chip has a slightly different pin configuration, so some modifications need to be made to route the correct PCB signals to the correct pins. I used [this procedure][19], but soldered the jumper wires to the socket, instead of the 16K RAM chip. Once again, I used some electrical tape to insulate the PCB traces from the modifications.
+The TS1000 comes with a 2K RAM chip. I replaced this with a 62256 32K chip, of which 16K is usable due to the way the ULA decodes memory addresses. The 2K RAM chip is not socketed and needs to be unsoldered from the PCB. The replacement chip has a slightly different pin configuration, so some modifications need to be made to route the correct PCB signals to the correct pins.
+
+I used [this procedure][19] by Tynemouth Software, but soldered the jumper wires to the socket instead of the new RAM chip. This leaves the RAM chip intact. Once again, I used some electrical tape to insulate the PCB traces from the modifications.
 
 #### Signal Mapping to Standard RAM
 
-The RAM in my TS1000 was a Toshiba part TMM2016P-1 (24-pin, 2Kx8, 100ns). I replaced it with a 62256 RAM (28-pin, 32Kx8, 100ns). The pin mapping between the chips is slightly different, as outlined in the table below. Fortunately, the TS1000 PCB footprint has space for a 28-pin chip.
+The RAM in my TS1000 was a Toshiba part [TMM2016P-1][40] (24-pin, 2Kx8, 100ns). I replaced it with a 62256 RAM (28-pin, 32Kx8, 100ns). Fortunately, the TS1000 PCB footprint has space for a 28-pin chip.
 
-The 2016 is a 24-pin part and the 62256 has 28 pins. The pins are mostly the same if you align the "bottom" of the two chips (i.e., line up 2016 pin 12 with 62256 pin 14). Note that the PCB jumper wire should be placed on the PCB location "LK2", and location "LK1" should be empty (a TS100 should already be configured this way from the factory). This jumper configuration routes the A10 signal to the RAM chip.
+The signal locations are mostly matching between the two parts if the "bottom" of the two chips are aligned (i.e., line up 2016 pin 12 with 62256 pin 14). The table below lists the changes needed for the signals that don't match.
 
-To simplify the modification, some address signals are swapped. This only impacts where the data is stored internal to the chip. It does not impact actual operation becase the same address location is used for both reads and writes. The physical jumper wires are connected to the cathode side of several diodes for ease of connection, as some of the signals are not otherwise easily accessible on the PCB.
+A TS100 should be configured from the factory with a jumper wire placed on the PCB location "LK2" and location "LK1" should be empty. This jumper configuration routes the A10 signal to the RAM chip.
+
+To simplify the modification, some address signals are swapped. This only impacts where the data is stored internal to the chip. It does not impact actual operation becase the same address location is used for both reads and writes. The physical jumper wires for this modification are connected to the cathode side of several diodes for ease of connection, as some of the signals are not otherwise easily accessible on the PCB.
 
 | 2016 Pin | RAM Footprint Signal | 62256 Pin | 62256 Signal | Notes                                         |
 | :------: | :------------------: | :-------: | :----------: | :-------------------------------------------- |
 | N/A      | RFSH                 | 1         | A14          | Bend up socket pin. Connect to Diode D1 (A11) |
-| N/A      | Vcc                  | 2         | A12          | Pulled high, since only using 16K of 32K      |
+| N/A      | Vcc                  | 2         | A12          | See [Note](#note-on-62256-pin-2) below  |
 | 1        | A7                   | 3         | A7           |                                               |
 | 2        | A6                   | 4         | A6           |                                               |
 | 3        | A5                   | 5         | A5           |                                               |
@@ -101,6 +110,10 @@ To simplify the modification, some address signals are swapped. This only impact
 | N/A      | /WE                  | 27        | /WE          |                                               |
 | N/A      | Vcc                  | 28        | Vcc          |                                               |
 
+##### Note on 62256 Pin 2
+
+Since the TS1000 can only address 16K of RAM without additional logic, one of the 62256 address lines needs to be tied either high or low. Fortunately, the existing 28-pin RAM layout on the PCB routes 5V to pin 2 of the 28-pin RAM footprint. So A12 is tied high without needing to make any physical board modifications. This effectively uses one less address bit, and therefore only 16K of the 32K chip's address space will be accessed.
+
 ### Photos
 
 - [Board with video modifications and key component locations][31]
@@ -120,12 +133,6 @@ The ROM (IC2) and Z80 CPU (IC3) appear to be fully functional. The ROM contains 
 |  4000 | 7FFF | 16K RAM     | External RAM pack disables 2K built-in RAM |
 |  2000 | FFFF | 56K RAM     | Shadow ROM and internal RAM disabled       |
 
-0 - 8K BASIC ROM  
-8-16K ROM Shadow (disabled with 56K RAM pack)  
-16-18K RAM 2K (disabled with external RAM packs)  
-16-32K RAM 16K (disables internal 2K RAM)  
-8-64K 56K RAM pack (diables internal 2K RAM)  
-
 ### Memory Size Test
 
 To check the RAM size, enter the following one-line program:
@@ -139,11 +146,11 @@ Upgrading a RAM chip in the motherboard to 16K would print 32768 (16K ROM + 16K 
 
 ## ROM Chip Adapter to Use Standard EPROMS
 
-The ROM in the TS1000 is a mask rom (Motorola part ZCM38818P) with the pinout of the obsolete 2364 ROM. A more readily available 2764 EPROM can be used with the [23xx Adapter][33] from Retro Innovations. The adapter can be used as-is with the default jumper settings and does not need the 74HCT138 decoder chip.
+The TS1000 uses a mask ROM (Motorola part ZCM38818P) which has the pinout of the obsolete [2364 ROM][38]. A more readily available 2764 EPROM can be used with the [23xx Adapter][33] from Retro Innovations. The bare-PCB version of the adapter can be used as-is with the default jumper settings and does not need the 74HCT138 decoder chip.
 
 ### Mapping a 2764 EPROM to the TS1000 2364 ROM
 
-If you want to make your own 2764->2364 adapter, see the table below. Note that the 2364 is a 24-pin part and the 2764 has 28 pins. The pins are mostly the same if you align the "bottom" of the two chips (i.e., line up 2364 pin 12 with 2764 pin 14).
+The signal connections from a 2764 to 2364 are listed in the table below. Note that the 2364 has 24 pins and the 2764 has 28 pins. The pins are mostly the same if the bottom of the 2364 is aligned with the bottom of the 2764 (i.e., line up 2364 pin 12 with 2764 pin 14).
 
 | 2364 Pin | 2364 Signal | 2764 Pin | 2764 Signal | Notes                         |
 | :------: | :---------: | :------: | :---------: | :---------------------------- |
@@ -178,7 +185,7 @@ If you want to make your own 2764->2364 adapter, see the table below. Note that 
 
 ## ROM Versions
 
-There are multiple versions of the Timex Sinclair ROM. The Timex Sinclair 1000 and ZX81 ROMs are the same.Differences between the machines, e.g. TV frame rate, are performed in software based on a PCB jumper.
+There are multiple versions of the Timex Sinclair ROM. The Timex Sinclair 1000 and ZX81 ROMs are the same. Differences between the machines, e.g. TV frame rate, are performed in software based on a PCB jumper.
 
 | Version/Download Link      | Description                                                              |
 | -------------------------- | ------------------------------------------------------------------------ |
@@ -207,6 +214,7 @@ There are multiple versions of the Timex Sinclair ROM. The Timex Sinclair 1000 a
   - [Updated version][7] to collapse display file to fit into 1K RAM
 - Convert ZX81 program text to a WAV file for loading into machine without cassette: [link][8] or [link][9]
 - TS1000 schematic from article in VISTA newsletter [Volume 3, Number 5][18]
+  - Corrected [power input/regulator section][35]
 - "[Reversible][19]" RAM upgrade procedure
   - Alternate [procedure][20] that cuts traces on the motherboard
   - [Procedure][21] to enable full 32K of on-board RAM
@@ -214,7 +222,10 @@ There are multiple versions of the Timex Sinclair ROM. The Timex Sinclair 1000 a
 - ULA replacement module: [vLA81][23]
   - Modern FPGA-based plug-in replacement for a failed Ferranti ULA chip ("IC1")
 - ROM chip [23xx Adapter][33] from Retro Innovations
+  - 23xx Adapter [product information page][37]
+  - 2364 [pinout][38] and [datasheet][39]
 - Article on [replacing a 2364 ROM with 2764 EPROM][34]
+- TMM2016 RAM [datasheet][40]
 - Writeup of another TS1000 [refurbishment][24]
 - Photos
   - Composite video circuit inside the [modulator shield can][29]
@@ -224,6 +235,8 @@ There are multiple versions of the Timex Sinclair ROM. The Timex Sinclair 1000 a
 ## License
 
 The software and other files in this repository are released under what is commonly called the [MIT License][100]. See the file [`LICENSE.txt`][101] in this repository.
+
+All hardware modifications mentioned here are for informational purposes only, and are a summary of changes made to my particular hardware, which may be different from yours. You should do your own research before making modifications to your hardware.
 
 [1]: https://www.timexsinclair.com/computers/timex-sinclair-1000/
 [2]: https://k1.spdns.de/Vintage/Sinclair/80/Sinclair%20ZX81/ROMs/
@@ -257,8 +270,14 @@ The software and other files in this repository are released under what is commo
 [30]: https://www.mouser.com/datasheet/2/687/tsr1_datasheet-3049675.pdf
 [31]: ./extras/pics/TS1000-board-with-video-mods-.jpeg
 [32]: ./extras/pics/TS1000-after-mods.jpeg
-[33]: http://www.go4retro.com/products/23xx-adapter/
+[33]: https://store.go4retro.com/23xx-adapter/
 [34]: https://wereallgeeks.wordpress.com/2024/05/22/replace-a-dead-2364-masked-rom-with-a-2764-eprom-of-the-same-size/
+[35]: ./extras/pics/TS1000-pwr-input-sch.jpeg
+[36]: https://en.wikipedia.org/wiki/2N3904
+[37]: http://www.go4retro.com/products/23xx-adapter/
+[38]: https://myoldcomputer.nl/technical-info/datasheets/integrated-chip-pinout-and-datasheets/memory/2364-2/
+[39]: https://myoldcomputer.nl/Files/Datasheet/2364-Commodore.pdf
+[40]: https://tvsat.com.pl/PDF/M/MCM2018_mot.pdf
 [100]: https://choosealicense.com/licenses/mit/
 [101]: ./LICENSE.txt
 [//]: # ([200]: https://github.com/Andy4495/timex-sinclair-1000)
