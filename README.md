@@ -50,7 +50,7 @@ Note that the only TS1000-specific [schematic][18] that I could find does not ma
 
 Also, I did not have a 5V charger with the correct plug (a two pin 1/8" audio plug), so I ended up cutting the plug from the original TS1000 9V charger and replaced the plug on my 5V charger. I was extra careful and double-checked that the "tip" conductor of the audio plug was positive and the "ring" connector was ground before attempting to power the computer with the modified charger.
 
-In addition, the metal springs inside the power jack were a little loose and didn't make a reliable contact, which caused the TS1000 to power cycle it was bumped. I bent the springs slightly to tighten them. I think these may need to be replaced at some point. If I do replace the power connector, I would probably use either a USB or barrel jack.
+In addition, the metal contact springs inside the power jack were a little loose and didn't make a reliable contact with the plug. This caused the TS1000 to power cycle if it was bumped or moved. I bent the springs slightly to tighten them. I think these may need to be replaced at some point. If I do replace the power connector, I would probably use either a USB or barrel jack.
 
 ### Capacitors
 
