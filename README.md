@@ -203,7 +203,7 @@ There are multiple versions of the Timex Sinclair ROM. The Timex Sinclair 1000 a
 
 - [Website][1] with numerous articles and links about the Timex Sinclair 1000 and related personal computers
 - ROM [downloads][2]
-  - Others downloads not listed in table [above](rom-versions)
+  - Others downloads not listed in table [above](#rom-versions)
     - Other languages: [Forth1][13], [Forth2][14], [Assembly][15]
     - Clones: [Lambda][16], [Power8300][17]
 - [Replacement keyboard][4] available on eBay
