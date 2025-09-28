@@ -16,7 +16,7 @@ All the remnants from the old cable need to be removed from connectors KB1 and K
 
 I modified the RF output video signal so that it bypasses the RF Modulator and instead outputs a composite video signal. I used the ["single transistor, 2 resistor"][3] design. After some experimentation, I settled on a value of 82 Ohms for the emitter-video-out resistor. The composite video signal produced with these changes works on my TV with a composite video input, a cheap [video-to-VGA][vga] converter, and an [RGBtoHDMI with Analog][rgb2hdmi] board.
 
-[vga]: [https://www.amazon.com/dp/B075N462CL]
+[vga]: https://www.amazon.com/dp/B075N462CL
 [rgb2hdmi]: https://retrohackshack.com/product/rgbtohdmi/
 
 #### Circuit modifications
@@ -225,7 +225,7 @@ There are multiple versions of the Timex Sinclair ROM. The Timex Sinclair 1000 a
   - [Single transistor method][3], with photos (this is the method that I used successfully)
 - RGBtoHDMI video converter [wiki][41]
 - [ZX81 BASIC programs and web emulator][5]
-- [Program][6] to converts a text file containing a ZX81 program into a ".p" file suitable for an emulator (this should also work to program a ROM).
+- [Program][6] to convert a text file containing a ZX81 program into a ".p" file suitable for an emulator (this should also work to program a ROM).
   - [Updated version][7] to collapse display file to fit into 1K RAM
 - Convert ZX81 program text to a WAV file for loading into machine without cassette: [tapeutils][8] or [zx81putil][9]
 - TS1000 schematic from article in VISTA newsletter [Volume 3, Number 5][18]
