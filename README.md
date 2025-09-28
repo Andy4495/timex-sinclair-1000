@@ -2,7 +2,7 @@
 
 [![Check Markdown Links](https://github.com/Andy4495/timex-sinclair-1000/actions/workflows/check-links.yml/badge.svg)](https://github.com/Andy4495/timex-sinclair-1000/actions/workflows/check-links.yml)
 
-Notes on restoring and using a vintage Timex Sinclair 1000 / Sinclair ZX81 personal computer.
+Restoring and using a vintage Timex Sinclair 1000 personal computer. This should also generally apply to a Sinclair ZX81.
 
 ## Modifications
 
@@ -10,28 +10,42 @@ Notes on restoring and using a vintage Timex Sinclair 1000 / Sinclair ZX81 perso
 
 The keyboard cable to the PCB through connectors KB1 and KB2 had become brittle and partially disintegrated, rendering the keyboard unusable. This is a common problem with the Sinclair membrane keyboards, so much so that replacements are readily available on [eBay][4].
 
-All the remnants from the old cable need to be removed from connectors KB1 and KB2 before installing the new keyboard. Using tweezers, picks, and a magnifying lens helps to get all the bits out.
+All the remnants from the old cable need to be removed from connectors KB1 and KB2 before installing the new keyboard. Tweezers, picks, and a magnifying lens are helpful tools to get all the bits out.
 
 ### Video Output
 
-I modified the RF output video signal so that it bypasses the RF Modulator and instead outputs a composite video signal. I used the ["single transistor, 2 resistor"][3] design. The composite video signal produced is not fully compliant, but is good enough to work on my TV with a composite video input. However, my cheap composite-to-HDMI converter box has difficulty with consistently syncing to the signal.
+I modified the RF output video signal so that it bypasses the RF Modulator and instead outputs a composite video signal. I used the ["single transistor, 2 resistor"][3] design. After some experimentation, I settled on a value of 82 Ohms for the emitter-video-out resistor. The composite video signal produced with these changes works on my TV with a composite video input, a cheap [video-to-VGA][vga] converter, and an [RGBtoHDMI with Analog][rgb2hdmi] board.
 
-Circuit modifications:
+[vga]: [https://www.amazon.com/dp/B075N462CL]
+[rgb2hdmi]: https://retrohackshack.com/product/rgbtohdmi/
 
-- Although I left it in place, I think it should be possible to remove the existing circuit board inside the RF shield can
-- Outside of the shield can, unsolder the middle wire from the "USA" via and move it to the "2" via (this is the video output signal from the ULA chip) ([photo][26])
-- Inside the shield can, cut the 5V and video signal wires from the circuit board inside the can (leave enough wire to solder the transistor legs)
-- Remove the channel select switch (near the regulator)
+#### Circuit modifications
+
+- Remove the channel select switch (near the voltage regulator)
 - Solder a jumper between the two switch vias nearest the regulator to route 5V to the RF shield can (see [photo][27])
+- Outside of the RF shield can, unsolder the middle wire from the "USA" via and move it to the "2" via (this is the video output signal from the ULA chip) ([photo][26])
+- Remove the top metal piece of the RF shield can
+- Inside the shield can, cut the 5V and video signal wires from the circuit board inside the can, leaving enough wire to solder the transistor legs
 - Cut the RF signal wire connected to the RCA jack (see [photo][25])
 - Disconnect the two parts behind the RCA socket (see [photo][28])
 - Install the transistor/resistor modification. I used a general-purpose [2N3904 transistor][36]:
   - Collector pin to 5V wire coming into shield can
   - Solder two resistors to the emitter pin
-    - 18 Ohm resistor between the emitter and the RCA output connector
+    - 82 Ohm resistor between the emitter and the RCA output connector
     - 100 Ohm resistor between the emitter and to ground (RF shield can)
   - Base pin to video input wire
 - Post-rework [photo][29]; note the electrical tape under the transistor and on the side of the shield can to insulate against possible shorts
+
+#### Video Quality
+
+With the above modifications and resistor values, the video output signal measured about 1.0 V max with the video-to-VGA converter (75 Ohm load) and 1.5 V max with the RGBtoHDMI (500+ Ohm load).
+
+The [RGBtoHDMI][41] gave a very sharp image with the `Sinclair/ZX81 Composite` profile, after running `Auto Calibrate Video Sampling` and then manually updating two `Sampling Menu` settings:
+
+- `DAC A Y Hi`: 058 (0.75 V)
+  - Values from 0.66 to 0.84 V were stable, so I chose the middle
+- `DAC F Y V Sync`: 004 (0.05 V)
+  - Value 003 (0.04 V) was also stable
 
 ### Regulator
 
@@ -69,7 +83,7 @@ The TS1000 comes with a 2K RAM chip. I replaced this with a 62256 32K chip, of w
 
 I used [this procedure][19] by Tynemouth Software, but soldered the jumper wires to the socket instead of the new RAM chip. This leaves the RAM chip intact. Once again, I used some electrical tape to insulate the PCB traces from the modifications.
 
-#### Signal Mapping to Standard RAM
+#### Details on How the RAM Upgrade Works
 
 The RAM in my TS1000 was a Toshiba part [TMM2016P-1][40] (24-pin, 2Kx8, 100ns). I replaced it with a 62256 RAM (28-pin, 32Kx8, 100ns). Fortunately, the TS1000 PCB footprint has space for a 28-pin chip.
 
@@ -209,10 +223,11 @@ There are multiple versions of the Timex Sinclair ROM. The Timex Sinclair 1000 a
 - [Replacement keyboard][4] available on eBay
 - Procedures to modify video output to composite video instead of RF output
   - [Single transistor method][3], with photos (this is the method that I used successfully)
+- RGBtoHDMI video converter [wiki][41]
 - [ZX81 BASIC programs and web emulator][5]
 - [Program][6] to converts a text file containing a ZX81 program into a ".p" file suitable for an emulator (this should also work to program a ROM).
   - [Updated version][7] to collapse display file to fit into 1K RAM
-- Convert ZX81 program text to a WAV file for loading into machine without cassette: [link][8] or [link][9]
+- Convert ZX81 program text to a WAV file for loading into machine without cassette: [tapeutils][8] or [zx81putil][9]
 - TS1000 schematic from article in VISTA newsletter [Volume 3, Number 5][18]
   - Corrected [power input/regulator section][35]
 - "[Reversible][19]" RAM upgrade procedure
@@ -278,6 +293,7 @@ All hardware modifications mentioned here are for informational purposes only, a
 [38]: https://myoldcomputer.nl/technical-info/datasheets/integrated-chip-pinout-and-datasheets/memory/2364-2/
 [39]: https://myoldcomputer.nl/Files/Datasheet/2364-Commodore.pdf
 [40]: https://tvsat.com.pl/PDF/M/MCM2018_mot.pdf
+[41]: https://github.com/hoglet67/RGBtoHDMI/wiki
 [100]: https://choosealicense.com/licenses/mit/
 [101]: ./LICENSE.txt
 [//]: # ([200]: https://github.com/Andy4495/timex-sinclair-1000)
