@@ -14,10 +14,7 @@ All the remnants from the old cable need to be removed from connectors KB1 and K
 
 ### Video Output
 
-I modified the RF output video signal so that it bypasses the RF Modulator and instead outputs a composite video signal. I used the ["single transistor, 2 resistor"][3] design. After some experimentation, I settled on a value of 82 Ohms for the emitter-video-out resistor. The composite video signal produced with these changes works on my TV with a composite video input, a cheap [video-to-VGA][vga] converter, and an [RGBtoHDMI with Analog][rgb2hdmi] board.
-
-[vga]: https://www.amazon.com/dp/B075N462CL
-[rgb2hdmi]: https://retrohackshack.com/product/rgbtohdmi/
+I modified the RF output video signal so that it bypasses the RF Modulator and instead outputs a composite video signal. I used the ["single transistor, 2 resistor"][3] design. After some experimentation, I settled on a value of 82 Ohms for the emitter-video-out resistor.
 
 #### Circuit modifications
 
@@ -38,9 +35,15 @@ I modified the RF output video signal so that it bypasses the RF Modulator and i
 
 #### Video Quality
 
-With the above modifications and resistor values, the video output signal measured about 1.0 V max with the video-to-VGA converter (75 Ohm load) and 1.5 V max with the RGBtoHDMI (500+ Ohm load).
+With the above modifications and resistor values, the video output signal measures about 1.0 V max with a 75 Ohm load.
 
-The [RGBtoHDMI][41] gave a very sharp image with the `Sinclair/ZX81 Composite` profile, after running `Auto Calibrate Video Sampling` and then manually updating two `Sampling Menu` settings:
+The composite video signal produced with these changes works on:
+
+- A 20 year old LCD TV with a composite video input
+- A cheap [video-to-VGA][vga] converter
+- An [RGBtoHDMI with Analog][rgb2hdmi] board
+
+The [RGBtoHDMI][41] in particular gave a very sharp image with the `Sinclair/ZX81 Composite` profile, after running `Auto Calibrate Video Sampling` and then manually updating two `Sampling Menu` settings:
 
 - `DAC A Y Hi`: 058 (0.75 V)
   - Values from 0.66 to 0.84 V were stable, so I chose the middle
@@ -294,6 +297,8 @@ All hardware modifications mentioned here are for informational purposes only, a
 [39]: https://myoldcomputer.nl/Files/Datasheet/2364-Commodore.pdf
 [40]: https://tvsat.com.pl/PDF/M/MCM2018_mot.pdf
 [41]: https://github.com/hoglet67/RGBtoHDMI/wiki
+[vga]: https://www.amazon.com/dp/B075N462CL
+[rgb2hdmi]: https://retrohackshack.com/product/rgbtohdmi/
 [100]: https://choosealicense.com/licenses/mit/
 [101]: ./LICENSE.txt
 [//]: # ([200]: https://github.com/Andy4495/timex-sinclair-1000)
