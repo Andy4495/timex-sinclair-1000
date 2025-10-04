@@ -52,9 +52,16 @@ The [RGBtoHDMI][41] in particular gave a very sharp image with the `Sinclair/ZX8
 
 ### Regulator
 
-All the other TS1000 and ZX81 restoration articles discuss removing the 7805 voltage regulator and replacing it with a switching DC-DC converter (like a [Traco TSR 1-2450][30]). However, since everyone has a pile of regulated 5V USB wall chargers, why not just bypass the regulator circuit and power the board directly with a regulated 5V supply? The main disadvantage to this approach is that 9 V is no longer available on the edge connector; that pin will supply 5 V instead. I am not sure if there are any cartridges that make use of the 9 V power. A 500 mA supply should be sufficient, but I ran across one reference that suggested that the TS1000 needs up to 700 mA.
+I suggest removing the existing 7805 linear regulator and instead power the board directly with a regulated 5 V USB wall chargeer (500 mA or more). Although this is a different recommendation than every other TS1000/ZX81 restoration article that I have seen, it seems to make the most sense:
 
-This requires a few modifications to the PCB:
+- Get rid of the ancient 9 V wall charger that comes with the TS1000
+- Use a modern regulated 5 V USB wall charger (of which I'm sure most people have a few extra)
+- No need for new regulator components (like a [Traco TSR 1-2450][30])
+- No more "extra" conversion of 9 V to 5 V for a board that just uses 5 V anyway
+
+All the components in the TS1000 main unit run off of 5 V. The only disadvantage to this approach is that 9 V is no longer available on the edge connector; that pin will supply 5 V instead. I am not sure if there are any cartridges that make use of the 9 V power.
+
+Converting the power input circuit to 5 V requires a few modifications to the PCB:
 
 - Remove inductors I1 and I2
 - Remove capacitors C13 and C14 (note that these are radial capacitors that look like resistors, but have a light green tint)
