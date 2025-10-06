@@ -52,14 +52,16 @@ The [RGBtoHDMI][41] in particular gave a very sharp image with the `Sinclair/ZX8
 
 ### Regulator
 
-I suggest removing the existing 7805 linear regulator and instead power the board directly with a regulated 5 V USB wall chargeer (500 mA or more). Although this is a different recommendation than every other TS1000/ZX81 restoration article that I have seen, it seems to make the most sense:
+If you have no plans to use the external 16K RAM Module, then it is possible to remove the existing 7805 linear regulator and instead power the board directly with a regulated 5 V USB wall chargeer (500 mA or more). Although this is a different recommendation than other TS1000/ZX81 restoration articles, it has several advantages:
 
-- Get rid of the ancient 9 V wall charger that comes with the TS1000
-- Use a modern regulated 5 V USB wall charger (of which I'm sure most people have a few extra)
-- No need for new regulator components (like a [Traco TSR 1-2450][30])
-- No more "extra" conversion of 9 V to 5 V for a board that just uses 5 V anyway
+- Gets rid of the ancient 9 V wall charger that comes with the TS1000
+- Uses a modern regulated 5 V USB wall charger (of which I'm sure most people have a few extra)
+- Removes the need for new regulator components (like a [Traco TSR 1-2450][30])
+- Removes the "extra" conversion of 9 V to 5 V for a board that just uses 5 V anyway
 
-All the components in the TS1000 main unit run off of 5 V. The only disadvantage to this approach is that 9 V is no longer available on the edge connector; that pin will supply 5 V instead. I am not sure if there are any cartridges that make use of the 9 V power.
+The only disadvantage to this approach is that 9 V is no longer available on the edge connector; that pin will supply 5 V instead. So the 16K RAM Module probably won't work, because it uses the 9 V signal to generate the -5 V supply for the RAM chips. If you use the RAM upgrade procedure explained below, then you won't have a need for the external 16K RAM Module.
+
+#### Converting to Regulated 5 V Power
 
 Converting the power input circuit to 5 V requires a few modifications to the PCB:
 
@@ -249,6 +251,7 @@ There are multiple versions of the Timex Sinclair ROM. The Timex Sinclair 1000 a
 - ROM chip [23xx Adapter][33] from Retro Innovations
   - 23xx Adapter [product information page][37]
   - 2364 [pinout][38] and [datasheet][39]
+- 16K RAM Module [schematic][42] from Syntax Quarterly [Vol. 1, No. 1][43]
 - Article on [replacing a 2364 ROM with 2764 EPROM][34]
 - TMM2016 RAM [datasheet][40]
 - Writeup of another TS1000 [refurbishment][24]
@@ -304,6 +307,8 @@ All hardware modifications mentioned here are for informational purposes only, a
 [39]: https://myoldcomputer.nl/Files/Datasheet/2364-Commodore.pdf
 [40]: https://tvsat.com.pl/PDF/M/MCM2018_mot.pdf
 [41]: https://github.com/hoglet67/RGBtoHDMI/wiki
+[42]: ./extras/ZX%20_16K_Ram_Pack%20_Schematic.pdf
+[43]: https://archive.org/details/sq-syntax-quarterly
 [vga]: https://www.amazon.com/dp/B075N462CL
 [rgb2hdmi]: https://retrohackshack.com/product/rgbtohdmi/
 [100]: https://choosealicense.com/licenses/mit/
