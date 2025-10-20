@@ -221,6 +221,29 @@ There are multiple versions of the Timex Sinclair ROM. The Timex Sinclair 1000 a
 | Other Languages            | Replacement ROMs for other programming languages like Forth and assembly |
 | Clones                     | Some clones had slightly modified ROMs                                   |
 
+## Downloading Programs From Cassette
+
+The TS1000 was designed to load programs from an external cassette play through the "EAR" jack. Although cassette players and media are no longer readily available, tools exist to convert program files into the WAV format which can then be played through a moodern computer's audio output and connected to the TS1000 to simulate a cassette player. I used [zx81putil][9].
+
+While others have reported success with this method, I have been unable to get my TS1000 to successfully load a program using a WAV file.
+
+I have tried several approaches:
+
+- Direct connection of PC headphone audio out to TS1000 EAR jack. At maximum volume, this produced a peak level of about +/- 1.3 V.
+- Connection from PC headphone output through a low-power speaker amplifier. This setup could produce a peak level of over +/- 5 V, but the waveform would start clipping at higher voltages.
+  - This method, however, had a grounding issue, which required me to connect only the positive wire from the amp to the TS1000.
+- Connection from PC headphone output through a battery-powered LM386 amplifier. This eliminated the grounding issue, and produced a peak level of about +/- 3 V. Adjusting the level on the amplifier higher would end up clippling the signal.
+
+I tried setting the level to get the maximum "clean" signal with no clipping, and adjusted the signal high enough that it practically looked like a square wave, but I was only able to get a program to load successfully once. The TS1000 was detecting the audio (the video showed the expected "squiggly box" pattern), but would not load a program except that one time.
+
+There is a possiblity that I damaged the cassette input to the ULA chip when I had the grounding issue mentioned above, and I will try a different ULA chip in the future to see if that fixes the problem.
+
+### Audio cable from PC to TS1000
+
+I wired my own cable from the PC to the TS1000. Since the PC uses a 3-conductor (tip-ring-sleeve) plug and the TS1000 is a 2-conductor (tip-sleeve), care must be taken that the correct signals are routed to the correct conductors.
+
+I used 3-conductor plugs (tip-ring-sleeve) at both ends of the connection. On the PC side, I used "ring" for the audio signal and "sleeve" for ground. At the TS1000 plug, I connected "tip" to the audio signal and "ring" to ground.
+
 ## Next steps
 
 - Use [zxtext2p][7] to convert program to WAV files so that I can load programs from a computer instead needing a cassette player
