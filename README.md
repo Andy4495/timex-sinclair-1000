@@ -52,24 +52,24 @@ The [RGBtoHDMI][41] in particular gave a very sharp image with the `Sinclair/ZX8
 
 ### Regulator
 
-If you have no plans to use the external 16K RAM Module, then it is possible to remove the existing 7805 linear regulator and instead power the board directly with a regulated 5 V USB wall chargeer (500 mA or more). Although this is a different recommendation than other TS1000/ZX81 restoration articles, it has several advantages:
+If you have no plans to use the external 16K RAM Module, then it is possible to remove the existing 7805 linear regulator and instead power the board directly with a regulated 5 V USB wall charger (500 mA or more). Although this is a different recommendation than other TS1000/ZX81 restoration articles, it has several advantages:
 
 - Gets rid of the ancient 9 V wall charger that comes with the TS1000
 - Uses a modern regulated 5 V USB wall charger (of which I'm sure most people have a few extra)
 - Removes the need for new regulator components (like a [Traco TSR 1-2450][30])
 - Removes the "extra" conversion of 9 V to 5 V for a board that just uses 5 V anyway
 
-The only disadvantage to this approach is that 9 V is no longer available on the edge connector; that pin will supply 5 V instead. So the 16K RAM Module probably won't work, because it uses the 9 V signal to generate the -5 V supply for the RAM chips. If you use the RAM upgrade procedure explained below, then you won't have a need for the external 16K RAM Module.
+The main disadvantage to this approach is that 9 V is no longer available on the edge connector; that pin will supply 5 V instead. So the 16K RAM Module probably won't work, because it uses the 9 V signal to generate the -5 V supply for the RAM chips. If you use the RAM upgrade procedure explained below, then you won't have a need for the external 16K RAM Module.
 
 #### Converting to Regulated 5 V Power
 
 Converting the power input circuit to 5 V requires a few modifications to the PCB:
 
 - Remove inductors I1 and I2
-- Remove capacitors C13 and C14 (note that these are radial capacitors that look like resistors, but have a light green tint)
+- Remove capacitors C13 and C14 (note that these are axial capacitors that look like resistors, but have a light green tint)
 - Remove the 7805 voltage regulator and attached heatsink
 - Solder jumper wires across the old I1 and I2 vias (i.e., replace I1 and I2 with zero ohm resistors)
-- Solder a jumper across the regulator input and output vias, making sure not to connect the middle pin
+- Solder a jumper across the regulator input and output through holes, making sure not to connect the middle pin
   - These are the two outer pins on the regulator (the middle pin is ground)
 
 Note that the only TS1000-specific [schematic][18] that I could find does not match the circuit on my board. In particular, on my board, I2 is connected between external power ground and PCB ground, which is why the zero ohm jumper across I2 is needed for this modification. I created a hand-drawn version of what I think is the [actual power input section][35].
